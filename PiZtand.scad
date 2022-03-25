@@ -8,14 +8,14 @@ foot_length = 35;
 // configurables
 screw_post_id = 2.5; // fdm naturally shrinks holes a little, M2.5 should not need a nut
 screw_post_od = 5; // 6 or less for Bannanna or Radxa, may be greater for Raspberry
-beam_width = screw_post_od;
-beam_thickness = beam_width;
+beam_width = screw_post_od; // 2
+beam_thickness = beam_width; // 6
 post_offset_extra = 0; // gap between pcb and post
 angle_a = 15; //30; // more post holes at other angles besides the 90 degree set
 angle_b = 30; //45;
 angle_c = 45; //60;
 fc = 0.1; // fitment clearance - if the posts don't fit in the holes, increase this
-pcr = 0.5; // post corner radius - round the corners of the post cross-section so they fit in the post holes
+pcr = 0.75; // post corner radius - round the corners of the post cross-section so they fit in the post holes
 
 // not configurable - pi zero dimensions
 // pcb
@@ -49,7 +49,7 @@ module print_kit () {
 
  // automatically put posts in the middle if they fit, else in front
  il = screws_x+post_offset*2-beam_width*2; // inside length
- pl = beam_thickness+pi_elevation+pcb_y/2+screws_y/2+beam_width/2; // post length
+ pl = beam_thickness+pi_elevation+pcb_y/2+screws_y/2+screw_post_od/2; // post length
  pw = beam_width/2 + post_offset + screw_post_od/2 + s + beam_width; // posts pair width
  px = (s+pl+s>il) ? pl/2 : pl-il/2+s; // post x offset
  py = (s+pl+s>il) ? foot_length + beam_width/2 + s + pw/2 : 0; // posts pair y offset
@@ -149,45 +149,38 @@ module tower () {
 }
 
 module post () {
- // arms
  translate([0,pcb_y/2+beam_thickness+pi_elevation,0]) {
+
+  // arms
   mirror_copy([0,1,0])
    translate([0,screws_y/2,0])
     arm();
 
-  // rounded cross-section
-  // mounting posts section
-  hull() {
-   mirror_copy([0,1,0])
-    translate([post_offset,screws_y/2,0])
-     cylinder(h=beam_thickness,d=beam_width);
-   //translate([post_offset-beam_width/2,0,0])
-   // cube([beam_width,beam_width,beam_thickness]);
-  }
-
-  // trunk - 4 small vertical cylinders hull for rounded corners
-  translate([post_offset,0,beam_thickness/2])
+  // trunk - rounded corners for tighter fit in post hole
+  translate([post_offset,screws_y/2+screw_post_od/2,beam_thickness/2])
    rotate([90,0,0])
-    hull() {
+    hull()
      mirror_copy([0,1,0])
       translate([0,beam_thickness/2-pcr,0])
        mirror_copy([1,0,0])
         translate([beam_width/2-pcr,0,0])
-         cylinder(h=beam_thickness+pi_elevation+pcb_y/2,r=pcr);
-  }
- }
+         cylinder(h=beam_thickness+pi_elevation+pcb_y/2+screws_y/2+screw_post_od/2,r=pcr);
 
+ }
 }
 
 module arm () {
  difference() {
+
   hull () {
    cylinder(h=beam_thickness,d=screw_post_od);
-   translate([post_offset,0,0])
-    cylinder(h=beam_thickness,d=screw_post_od);
+   translate([post_offset-1,-screw_post_od/2,0])
+    cube([1,screw_post_od,beam_thickness]);
   }
+
   translate([0,0,-o])
    cylinder(h=o+beam_thickness+o,d=screw_post_id);
+
  }
 }
 
