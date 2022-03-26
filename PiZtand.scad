@@ -9,53 +9,83 @@
 // * horizontal mount option (no uprights)
 // * snap-together screwless option
 
-// main configurables
-style = "thin"; // thin or chunky
-pi_elevation = 45; // top of base to bottom of pcb - can be as little as 0, but if this is too short, you won't have room for a normal usb power plug. At 20-40 you'll need a 90 degree usb plug. At 0 you'll need to power by the gpio pins.
-foot_length = 35; // base center post to front or rear
+// Some comments structured to please the Thingiverse Customizer
 
-// configurables
-screw_post_id = 2.5; // fdm shrinks holes a little, M2.5 should thread in slightly tight
-screw_post_od = 5; // 6 or less to clear components on Banana or Radxa
-beam_width = (style=="chunky") ? screw_post_od : 2;
-beam_thickness = (style=="chunky") ? beam_width : 6;
-post_offset = 0; // gap between pcb and post
-// there is always one set of vertical post holes in the center of the base
-// these are 3 optional extra sets of post holes at various angles off from vertical
-// 0 means don't include that set of holes
+// ---- main configurables ----
+
+// thin or chunky
+style = "thin";
+// Top surface of base to bottom of PCB. Can be as little as 0, but if this is too short, you won't have room for a normal usb power plug. Below 40 and you'll need a 90-degree usb cable. Below 15 and you'll need to power the Pi through the gpio pins instead of usb.
+pi_elevation = 45;
+// How much "foot" from the tower to the front or rear of the base. (how big to make the base from front to back)
+foot_length = 35;
+
+// ---- other configurables ----
+
+// Screw hole I.D. The screws are M2.5, and FDM shrinks holes a little, so setting this to 2.5 usually results in a hole that is actually slightly less, and a M2.5 screw screws into the plastic perfectly. If the hole comes our too loose to hold a screw, try just reducing this to 2.4
+screw_id = 2.5;
+// Width of the screw mount arm coming from the tower to the screw hole. May not exceed 6mm for Banana or Radxa boards, as there are components on the back. This is also used for the beam_width and beam_thickness for the "chunky" version.
+screw_od = 5;
+
+// blargh, needless extra code just to work around Thingiverse customizer
+// It doesn't understand the conditional assignment syntax for beam_width & beam_thickness, and doesn't even show the variable to the user at all.
+// So this is just a kludgey way to get the values exposed where the user can see them and change them.
+
+// size of beams for "thin" version
+thin_beam_width = 2;
+thin_beam_thickness = 6;
+// size of beams for "chunky" version
+chunky_beam_width = screw_od;
+chunky_beam_thickness = chunky_beam_width;
+
+beam_width = (style=="chunky") ? chunky_beam_width : thin_beam_width;
+beam_thickness = (style=="chunky") ? chunky_beam_thickness : thin_beam_thickness;
+
+// Gap between the edge of the pcb and the post. The post comes no closer than the edge of the pcb, because the Banana and Radxa boards have components on the back. But you can increase this to make a wider base & tower if you want.
+post_offset = 0;
+
+// There is always one set of post holes that are not optional, always in the center of the base, always perfectly vertical. In addition to that, there are optionally 3 more sets of post holes at different angles and positions. Setting any of these to 0 will disable that set of extra post holes.
 angle_a = 15; // 0 15 30
 angle_b = 30; // 0 30 45
 angle_c = 45; // 0 45 60
-fc = 0.1; // fitment clearance - if the posts don't fit in the holes, increase this by 0.05 or 0.1
-pcr = 0.75; // post corner radius - holes can never have perfectly sharp inside corners, posts need the corners slightly rounded to fit in the holes
 
-// not configurable - pi zero dimensions
-// pcb
-pcb_x = 65;
-pcb_y = 30;
-pcb_cr = 3;
-pcb_thickness = 1.6;
-// screw holes
-screws_x = 58;
-screws_y = 23;
+// fitment clearance - if the posts don't fit in the holes, increase this by 0.05 or 0.1
+fc = 0.1; 
 
-arm_length_min = pcb_x/2-screws_x/2+beam_width/2; // edge of post at edge of pcb, Bananna & Radxa have parts on back
+// post corner radius - holes can never have perfectly sharp inside corners, posts need the corners slightly rounded to fit in the holes
+pcr = 0.75; 
+
+// space between parts in print_kit()
+s=1;
+
+// These are reference, not configurable.
+// The "+ 0" is just a hack to hide the variable from Thingiverse customizer.
+// pcb dimensions
+pcb_x = 65 + 0;
+pcb_y = 30 + 0;
+pcb_cr = 3 + 0;
+pcb_thickness = 1.6 + 0;
+screws_x = 58 + 0;
+screws_y = 23 + 0;
+
+arm_length_min = pcb_x/2-screws_x/2+beam_width/2; // edge of post at edge of pcb, Banana & Radxa have parts on back
 arm_length = arm_length_min + post_offset; // screw center to beam center
 
+// arc smoothness
 $fn = 36;
-o = 0.01;
-s=1; // print_kit() part seperation
+// cut/join overlap
+o = 0.01 + 0;
 
 print_kit();  // print all parts
 //base(); // print just the base
 //post(); // print just one post
 
-dx = 90;
-dz = 20;
-translate([-dx*1.5,0,dz]) %assembly();
-translate([-dx*0.5,0,dz]) rotate([0,0,180]) %assembly(angle_a);
-translate([dx*0.5,0,dz]) %assembly(angle_b);
-translate([dx*1.5,0,dz]) rotate([0,0,180]) %assembly(angle_c);
+dx = pcb_x + post_offset*2 + beam_width*2 + 20;
+dy = foot_length*2 + beam_width + 20;
+translate([-dx*1.5,dy,0]) %assembly();
+translate([-dx*0.5,dy,0]) rotate([0,0,180]) %assembly(angle_a);
+translate([dx*0.5,dy,0]) %assembly(angle_b);
+translate([dx*1.5,dy,0]) rotate([0,0,180]) %assembly(angle_c);
 
 module print_kit () {
 
@@ -63,16 +93,16 @@ module print_kit () {
 
  // automatically put posts in the middle if they fit, else in front
  il = screws_x+arm_length*2-beam_width*2; // inside length
- pl = beam_thickness+pi_elevation+pcb_y/2+screws_y/2+screw_post_od/2; // post length
- pw = beam_width/2 + arm_length + screw_post_od/2 + s + beam_width; // posts pair width
+ pl = beam_thickness+pi_elevation+pcb_y/2+screws_y/2+screw_od/2; // post length
+ pw = beam_width/2 + arm_length + screw_od/2 + s + beam_width; // posts pair width
  px = (s+pl+s>il) ? pl/2 : pl-il/2+s; // post x offset
  py = (s+pl+s>il) ? foot_length + beam_width/2 + s + pw/2 : 0; // posts pair y offset
 
  translate([0,-py,0]) {
-  translate([-px,arm_length/2-beam_width/4-screw_post_od/4-s/2,0])
+  translate([-px,arm_length/2-beam_width/4-screw_od/4-s/2,0])
    rotate([0,0,-90])
     post();
-  translate([px,-arm_length/2+beam_width/4+screw_post_od/4+s/2,0])
+  translate([px,-arm_length/2+beam_width/4+screw_od/4+s/2,0])
     rotate([0,0,90])
     post();
  }
@@ -174,14 +204,14 @@ module post () {
     arm();
 
   // trunk - rounded corners for tighter fit in post hole
-  translate([arm_length,screws_y/2+screw_post_od/2,beam_thickness/2])
+  translate([arm_length,screws_y/2+screw_od/2,beam_thickness/2])
    rotate([90,0,0])
     hull()
      mirror_copy([0,1,0])
       translate([0,beam_thickness/2-pcr,0])
        mirror_copy([1,0,0])
         translate([beam_width/2-pcr,0,0])
-         cylinder(h=beam_thickness+pi_elevation+pcb_y/2+screws_y/2+screw_post_od/2,r=pcr);
+         cylinder(h=beam_thickness+pi_elevation+pcb_y/2+screws_y/2+screw_od/2,r=pcr);
 
  }
 }
@@ -190,13 +220,13 @@ module arm () {
  difference() {
 
   hull () {
-   cylinder(h=beam_thickness,d=screw_post_od);
-   translate([arm_length-1,-screw_post_od/2,0])
-    cube([1,screw_post_od,beam_thickness]);
+   cylinder(h=beam_thickness,d=screw_od);
+   translate([arm_length-1,-screw_od/2,0])
+    cube([1,screw_od,beam_thickness]);
   }
 
   translate([0,0,-o])
-   cylinder(h=o+beam_thickness+o,d=screw_post_id);
+   cylinder(h=o+beam_thickness+o,d=screw_id);
 
  }
 }
@@ -215,7 +245,7 @@ module pcb() {
   translate([0,screws_y/2,0])
    mirror_copy([1,0,0])
     translate([screws_x/2,0,-o])
-     cylinder(h=o+pcb_thickness+o,d=screw_post_id);
+     cylinder(h=o+pcb_thickness+o,d=screw_id);
  }
 
 }
