@@ -5,7 +5,7 @@ Simple, quick-printing, configurable stand mount for Raspberry Pi Zero.
 ![](PiZtand.jpg)
 ![](PiZtand_rear.jpg)
 
-Also supports BannannaPi M2 Zero and Radxa Zero, which have components on the back side.
+Also supports BananaPi M2 Zero and Radxa Zero, which have components on the back side.
 
 ## Directions
 

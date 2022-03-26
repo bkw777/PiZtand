@@ -1,4 +1,4 @@
-// Vertical stand/mount for Raspberry Pi Zero, Zero 2, BanannaPi M2 Zero, Radxa Zero
+// Vertical stand/mount for Raspberry Pi Zero, Zero 2, BananaPi M2 Zero, Radxa Zero
 // b.kenyon.w@gmail.com
 
 // TODOS
@@ -16,7 +16,7 @@ foot_length = 35; // base center post to front or rear
 
 // configurables
 screw_post_id = 2.5; // fdm shrinks holes a little, M2.5 should thread in slightly tight
-screw_post_od = 5; // 6 or less to clear components on Bannanna or Radxa
+screw_post_od = 5; // 6 or less to clear components on Banana or Radxa
 beam_width = (style=="chunky") ? screw_post_od : 2;
 beam_thickness = (style=="chunky") ? beam_width : 6;
 post_offset = 0; // gap between pcb and post
