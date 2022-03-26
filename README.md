@@ -7,6 +7,8 @@ Simple, quick-printing, configurable stand mount for Raspberry Pi Zero.
 
 Also supports BananaPi M2 Zero and Radxa Zero, which have components on the back side.
 
+Thingiverse [thing:5330551](https://www.thingiverse.com/thing:5330551)
+
 ## Directions
 
 Screw the posts to the Pi Zero first, then insert into one of the sets of post holes in the base.

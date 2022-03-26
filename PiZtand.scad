@@ -16,13 +16,12 @@
 // thin or chunky
 style = "thin";
 // Top surface of base to bottom of PCB. Can be as little as 0, but if this is too short, you won't have room for a normal usb power plug. Below 40 and you'll need a 90-degree usb cable. Below 15 and you'll need to power the Pi through the gpio pins instead of usb.
-pi_elevation = 45;
+pi_elevation = 45; // 45
 // How much "foot" from the tower to the front or rear of the base. (how big to make the base from front to back)
-foot_length = 35;
-
+foot_length = 35; // 35
 // ---- other configurables ----
 
-// Screw hole I.D. The screws are M2.5, and FDM shrinks holes a little, so setting this to 2.5 usually results in a hole that is actually slightly less, and a M2.5 screw screws into the plastic perfectly. If the hole comes our too loose to hold a screw, try just reducing this to 2.4
+// Screw hole I.D. (variable is "screw_id" but thingiverse customizer doesn't show it?) The screws are M2.5, and FDM shrinks holes a little, so setting this to 2.5 usually results in a hole that is actually slightly less, and a M2.5 screw screws into the plastic perfectly. If the hole comes our too loose to hold a screw, try just reducing this to 2.4
 screw_id = 2.5;
 // Width of the screw mount arm coming from the tower to the screw hole. May not exceed 6mm for Banana or Radxa boards, as there are components on the back. This is also used for the beam_width and beam_thickness for the "chunky" version.
 screw_od = 5;
@@ -55,7 +54,7 @@ fc = 0.1;
 // post corner radius - holes can never have perfectly sharp inside corners, posts need the corners slightly rounded to fit in the holes
 pcr = 0.75; 
 
-// space between parts in print_kit()
+// Seperation between parts in print_kit(). 1 is fine.
 s=1;
 
 // These are reference, not configurable.
@@ -109,21 +108,22 @@ module print_kit () {
 
 }
 
-module assembly (a=0) {
+module assembly (a=90) {
+ if (a>0) {
 
- if (angle_a>0 && a==angle_a)
+ if (a==angle_a)
   translate([0,foot_length/3,beam_thickness/2])
    rotate([-a,0,180])
     translate([0,0,-beam_thickness/3])
      tower();
 
- else if(angle_b>0 && a==angle_b)
+ else if(a==angle_b)
   translate([0,-foot_length/2,beam_thickness/2])
    rotate([-a,0,0])
     translate([0,0,-beam_thickness/4])
      tower();
 
- else if(angle_c>0 && a==angle_c)
+ else if(a==angle_c)
   translate([0,foot_length-foot_length/3,beam_thickness/2])
    rotate([-a,0,180])
     translate([0,0,-beam_thickness/5])
@@ -132,6 +132,7 @@ module assembly (a=0) {
  else tower();
 
  base();
+ }
 }
 
 module base () {
