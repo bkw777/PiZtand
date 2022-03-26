@@ -2,20 +2,21 @@
 // b.kenyon.w@gmail.com
 
 // TODOS
-// * cable holder
-// * wifi antenna holder
+// * cable holder (clip on)
+// * wifi antenna holder (clip on)
 // * anchor points for weighted feet or plate
-// * connect to breadboard
-// * horizontal flat option (no uprights)
+// * attach to breadboard
+// * horizontal mount option (no uprights)
+// * snap-together screwless option
 
 // main configurables
+style = "thin"; // thin or chunky
 pi_elevation = 45; // top of base to bottom of pcb - can be as little as 0, but if this is too short, you won't have room for a normal usb power plug. At 20-40 you'll need a 90 degree usb plug. At 0 you'll need to power by the gpio pins.
 foot_length = 35; // base center post to front or rear
 
 // configurables
-screw_post_id = 2.5; // fdm naturally shrinks holes a little, M2.5 should not need a nut
-screw_post_od = 5; // 6 or less for Bannanna or Radxa, may be greater for Raspberry
-style = "thin"; // thin or chunky
+screw_post_id = 2.5; // fdm shrinks holes a little, M2.5 should thread in slightly tight
+screw_post_od = 5; // 6 or less to clear components on Bannanna or Radxa
 beam_width = (style=="chunky") ? screw_post_od : 2;
 beam_thickness = (style=="chunky") ? beam_width : 6;
 post_offset = 0; // gap between pcb and post
@@ -49,10 +50,12 @@ print_kit();  // print all parts
 //base(); // print just the base
 //post(); // print just one post
 
-//assembly(); // display all parts assembled
-//assembly(angle_a);
-translate([0,0,beam_thickness*4]) %assembly(angle_b);
-//assembly(angle_c);
+dx = 90;
+dz = 20;
+translate([-dx*1.5,0,dz]) %assembly();
+translate([-dx*0.5,0,dz]) rotate([0,0,180]) %assembly(angle_a);
+translate([dx*0.5,0,dz]) %assembly(angle_b);
+translate([dx*1.5,0,dz]) rotate([0,0,180]) %assembly(angle_c);
 
 module print_kit () {
 
@@ -199,6 +202,7 @@ module arm () {
 }
 
 module pcb() {
+ color("green",0.1)
  difference() {
   hull() {
    mirror_copy([0,1,0])
