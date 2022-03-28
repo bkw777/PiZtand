@@ -3,7 +3,6 @@ Simple, quick-printing, configurable stand mount for Raspberry Pi Zero.
 
 ![](PiZtand.png)
 ![](PiZtand.jpg)
-![](PiZtand_rear.jpg)
 
 Also supports BananaPi M2 Zero and Radxa Zero, which have components on the back side.
 
@@ -19,11 +18,6 @@ The base has 4 sets of post holes at different angles from vertical to 45 degree
 
 Printing all parts at once only requires 80x95mm build surface, and prints in under an hour.
 
-<!--
 ## Configurable options
-The scad file has several variables that you can change.
-
-```style = "thin";``` or ```"chunky"```
-
-...
--->
+The scad file has several variables that you can change to generate different configurations.<br>
+For instance a [stubby](stubby.md) version.

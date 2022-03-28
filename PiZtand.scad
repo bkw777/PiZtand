@@ -11,6 +11,10 @@
 
 // Some comments structured to please the Thingiverse Customizer
 
+print_kit();  // print all parts
+//base(); // print just the base
+//post(); // print just one post
+
 // ---- main configurables ----
 
 // thin or chunky
@@ -75,9 +79,6 @@ $fn = 36;
 // cut/join overlap
 o = 0.01 + 0;
 
-print_kit();  // print all parts
-//base(); // print just the base
-//post(); // print just one post
 
 dx = pcb_x + post_offset*2 + beam_width*2 + 20;
 dy = foot_length*2 + beam_width + 20;
